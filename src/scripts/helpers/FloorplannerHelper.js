@@ -7,6 +7,7 @@ export class FloorPlannerHelper {
         this.__floorplanner = floorplanner;
 
         this.__wallThickness = Dimensioning.cmToMeasureRaw(20);
+        this.__wallElevation = Dimensioning.cmToMeasureRaw(150);
         this.__cornerElevation = Dimensioning.cmToMeasureRaw(250);
         this.__roomName = 'A New Room';
 
@@ -56,6 +57,8 @@ export class FloorPlannerHelper {
         this.__selectedWall = evt.item;
         this.__selectedWallEntity = evt.entity;
         this.__wallThickness = Dimensioning.cmToMeasureRaw(evt.item.thickness);
+        console.log('__wallSelected >>>>>>>> ' ,evt.item, evt.item.thickness, evt.item.elevation);
+        this.__wallElevation = Dimensioning.cmToMeasureRaw(evt.item.elevation);
     }
 
     __roomSelected(evt) {
@@ -88,7 +91,21 @@ export class FloorPlannerHelper {
         }
     }
     get wallThickness() {
+        console.log('this.__wallThickness', this.__wallThickness);
         return Dimensioning.cmToMeasureRaw(this.__wallThickness);
+    }
+
+    set wallElevation(value) {
+        if (this.__selectedWall) {
+            let cms = Dimensioning.cmFromMeasureRaw(value);
+            this.__selectedWall.elevation = cms;
+            this.__wallElevation = value;
+        }
+    }
+
+    get wallElevation() {
+        console.log('this.__wallElevation', this.__wallElevation);
+        return Dimensioning.cmToMeasureRaw(this.__wallElevation);
     }
 
     set cornerElevation(value) {

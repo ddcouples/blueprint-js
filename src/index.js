@@ -1,4 +1,4 @@
-import JSZip from "jszip";
+import JSZip from 'jszip';
 import FileSaver from 'file-saver';
 import FPS from 'fps-now';
 
@@ -72,7 +72,7 @@ let opts = {
             'boundary-point-radius': 5.0,
             'boundary-line-thickness': 2.0,
             'boundary-point-color':'#030303',
-            'boundary-line-color':'#090909',
+            'boundary-line-color':'#313131',
             pannable: true,
             zoomable: true,
             scale: false,
@@ -96,7 +96,7 @@ let opts = {
             occludedRoofs: false
         }
     },
-    textureDir: "models/textures/",
+    textureDir: 'models/textures/',
     widget: false,
     resize: true,
 };
@@ -177,7 +177,7 @@ function addDoorForWall() {
 function switchViewer() {
     blueprint3d.switchView();
     if (blueprint3d.currentView === 2) {
-        uxInterface.setValue("Current View", "Floor Planning");
+        uxInterface.setValue('Current View', 'Floor Planning');
         settingsViewer3d.hide();
         settingsViewer2d.show();
 
@@ -189,7 +189,7 @@ function switchViewer() {
         }
 
     } else if (blueprint3d.currentView === 3) {
-        uxInterface.setValue("Current View", "Room Planning");
+        uxInterface.setValue('Current View', 'Room Planning');
         settingsViewer2d.hide();
         settingsSelectedCorner.hide();
         settingsSelectedWall.hide();
@@ -281,7 +281,7 @@ function exportDesignAsPackage() {
     }
     Object.values(floorplan.newFloorTextures).forEach((texturePack) => {
         images = images.concat(getWallTextureImages(texturePack, images));
-        console.log("TEXTURE PACK ", texturePack);
+        console.log('TEXTURE PACK ', texturePack);
     });
     // for (i = 0; i < floorplan.newFloorTextures.length; i++) {
     //     let roomTexture = floorplan.newFloorTextures[i];
@@ -329,8 +329,8 @@ function exportDesignAsPackage() {
         });
         zip.file(model_path, gltfBlob); //, { base64: false }); //, { base64: true }
     }
-    zip.generateAsync({ type: "blob" }).then(function(content) {
-        FileSaver.saveAs(content, "YourBlueprintProject.zip");
+    zip.generateAsync({ type: 'blob' }).then(function(content) {
+        FileSaver.saveAs(content, 'YourBlueprintProject.zip');
     });
 
     // let a = window.document.createElement('a');
@@ -375,6 +375,7 @@ blueprint3d.floorplanner.addFloorplanListener(EVENT_WALL_2D_CLICKED, function(ev
     settingsSelectedRoom.hide();
     settingsViewer2d.showControl('Delete');
     settingsSelectedWall.setValue('wallThickness', Dimensioning.cmToMeasureRaw(evt.item.thickness));
+    settingsSelectedWall.setValue('wallElevation', Dimensioning.cmToMeasureRaw(evt.item.elevation));
 });
 blueprint3d.floorplanner.addFloorplanListener(EVENT_ROOM_2D_CLICKED, function(evt) {
     settingsSelectedCorner.hide();
@@ -451,13 +452,13 @@ if (!opts.widget) {
     uxInterface.addButton('Switch Viewer', switchViewer);
     uxInterface.addHTML('Current View', 'Floorplanning');
 
-    uxInterface.addFileChooser("Load Design", "Load Design", ".blueprint3d", loadBlueprint3DDesign);
+    uxInterface.addFileChooser('Load Design', 'Load Design', '.blueprint3d', loadBlueprint3DDesign);
     uxInterface.addButton('Save Design', saveBlueprint3DDesign);
     uxInterface.addButton('Export as GLTF', saveBlueprint3D);
     uxInterface.addButton('Export Project (blueprint-py)', exportDesignAsPackage);
     uxInterface.addButton('Reset', blueprint3d.model.reset.bind(blueprint3d.model));
 
-    uxInterface.addFileChooser("Load Locked Design", "Load Locked Design", ".blueprint3d", loadLockedBlueprint3DDesign);
+    uxInterface.addFileChooser('Load Locked Design', 'Load Locked Design', '.blueprint3d', loadLockedBlueprint3DDesign);
 
     settingsViewer2d.addButton('Draw Mode', switchViewer2DToDraw);
     settingsViewer2d.addButton('Move Mode', switchViewer2DToMove);
@@ -472,9 +473,10 @@ if (!opts.widget) {
     settingsViewer2d.bindRange('gridSpacing', 10, 200, configurationHelper.gridSpacing, 1, configurationHelper);
     settingsViewer2d.bindNumber('boundsX', 1, 200, configurationHelper.boundsX, 1, configurationHelper);
     settingsViewer2d.bindNumber('boundsY', 1, 200, configurationHelper.boundsY, 1, configurationHelper);
-
-    settingsSelectedCorner.bindRange('cornerElevation', 1, 500, floorplanningHelper.cornerElevation, 1, floorplanningHelper);
+    console.log(floorplanningHelper, '-----------');
+    settingsSelectedCorner.bindRange('cornerElevation', 1, 10, floorplanningHelper.cornerElevation, 1, floorplanningHelper);
     settingsSelectedWall.bindRange('wallThickness', 0.01, 1, floorplanningHelper.wallThickness, 0.01, floorplanningHelper);
+    settingsSelectedWall.bindRange('wallElevation', 0.5, 10, floorplanningHelper.wallElevation, 0.1, floorplanningHelper);
     settingsSelectedRoom.bindText('roomName', floorplanningHelper.roomName, floorplanningHelper);
 
     // settingsViewer3d.addDropDown('Floor Textures', floor_texture_keys, selectFloorTexture);

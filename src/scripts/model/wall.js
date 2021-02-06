@@ -31,6 +31,7 @@ export class Wall extends EventDispatcher {
         this.start = start;
         this.end = end;
         this.name = 'wall';
+        console.log(aa, bb, !aa && !bb, '<<<<<<<<<<<<<<<<')
         if (!aa && !bb) {
             this._walltype = WallTypes.STRAIGHT;
         } else {
@@ -401,6 +402,16 @@ export class Wall extends EventDispatcher {
         // this.dispatchEvent({ type: EVENT_UPDATED, item: this }); //This is stupid. You need to say what event exactly happened
     }
 
+    get elevation() {
+        return this.height;
+    }
+
+    set elevation(val) {
+        this.height = val;
+        this.start.move(this.start.location.x, this.start.location.y);
+        this.end.move(this.end.location.x, this.end.location.y);
+    }
+
     get uuid() {
         return this.getUuid();
     }
@@ -486,7 +497,6 @@ export class Wall extends EventDispatcher {
         this.end.move(eNewLocation.x, eNewLocation.y);
         this.__location = vec2;
     }
-
     getStart() {
         return this.start;
     }

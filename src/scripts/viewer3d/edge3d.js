@@ -58,7 +58,8 @@ export class Edge3D extends EventDispatcher {
 
     __updateTexturePack(evt) {
         if (evt.type === EVENT_UPDATE_TEXTURES) {
-            let height = Math.max(this.wall.startElevation, this.wall.endElevation);
+            // let height = Math.max(this.wall.startElevation, this.wall.endElevation);
+            let height = Math.max(this.wall.elevation, this.wall.elevation);
             let width = this.edge.interiorDistance();
             let texturePack = this.edge.getTexture();
 
@@ -245,7 +246,8 @@ export class Edge3D extends EventDispatcher {
         if (this.edge === null) {
             return;
         }
-        let height = Math.max(this.wall.startElevation, this.wall.endElevation);
+        // let height = Math.max(this.wall.startElevation, this.wall.endElevation);
+        let height = Math.max(this.wall.elevation, this.wall.elevation);
         let width = this.edge.interiorDistance();
         this.__wallMaterial3D.dimensions = new Vector2(width, height);
         // this.__wallMaterial3D.updateDimensions(width, height);
@@ -284,8 +286,10 @@ export class Edge3D extends EventDispatcher {
         // }
 
         // sides
-        this.planes.push(this.buildSideFillter(this.edge.interiorStart(), this.edge.exteriorStart(), extStartCorner.elevation, this.sideColor));
-        this.planes.push(this.buildSideFillter(this.edge.interiorEnd(), this.edge.exteriorEnd(), extEndCorner.elevation, this.sideColor));
+        // this.planes.push(this.buildSideFillter(this.edge.interiorStart(), this.edge.exteriorStart(), extStartCorner.elevation, this.sideColor));
+        // this.planes.push(this.buildSideFillter(this.edge.interiorEnd(), this.edge.exteriorEnd(), extEndCorner.elevation, this.sideColor));
+        this.planes.push(this.buildSideFillter(this.edge.interiorStart(), this.edge.exteriorStart(), this.wall.elevation, this.sideColor));
+        this.planes.push(this.buildSideFillter(this.edge.interiorEnd(), this.edge.exteriorEnd(), this.wall.elevation, this.sideColor));
         //		this.planes.push(this.buildSideFillter(this.edge.interiorStart(), this.edge.exteriorStart(), this.wall.startElevation, this.sideColor));
         //		this.planes.push(this.buildSideFillter(this.edge.interiorEnd(), this.edge.exteriorEnd(), extEndCorner.endElevation, this.sideColor));
     }
@@ -296,9 +300,10 @@ export class Edge3D extends EventDispatcher {
         let v2 = this.toVec3(end);
         let v3 = v2.clone();
         let v4 = v1.clone();
-        v3.y = this.edge.getEnd().elevation;
-        v4.y = this.edge.getStart().elevation;
-
+        // v3.y = this.edge.getEnd().elevation;
+        // v4.y = this.edge.getStart().elevation;
+        v3.y = this.wall.elevation;
+        v4.y = this.wall.elevation;
         //		v3.y = this.wall.getClosestCorner(end).elevation;
         //		v4.y = this.wall.getClosestCorner(start).elevation;
 
@@ -333,8 +338,8 @@ export class Edge3D extends EventDispatcher {
 
         // make UVs
         let totalDistance = this.edge.interiorDistance(); //Utils.distance(new Vector2(v1.x, v1.z), new Vector2(v2.x, v2.z));
-
-        let height = Math.max(this.wall.startElevation, this.wall.endElevation);
+        // let height = Math.max(this.wall.startElevation, this.wall.endElevation);
+        let height = Math.max(this.wall.elevation, this.wall.elevation);
         geometry.faceVertexUvs[0] = [];
 
         geometry.faces.forEach((face) => {
@@ -379,10 +384,16 @@ export class Edge3D extends EventDispatcher {
     }
 
     buildFillerVaryingHeights(edge, side, color) {
-        let a = this.toVec3(edge.exteriorStart(), this.edge.getStart().elevation);
-        let b = this.toVec3(edge.exteriorEnd(), this.edge.getEnd().elevation);
-        let c = this.toVec3(edge.interiorEnd(), this.edge.getEnd().elevation);
-        let d = this.toVec3(edge.interiorStart(), this.edge.getStart().elevation);
+        // let a = this.toVec3(edge.exteriorStart(), this.edge.getStart().elevation);
+        // let b = this.toVec3(edge.exteriorEnd(), this.edge.getEnd().elevation);
+        // let c = this.toVec3(edge.interiorEnd(), this.edge.getEnd().elevation);
+        // let d = this.toVec3(edge.interiorStart(), this.edge.getStart().elevation);
+
+
+        let a = this.toVec3(edge.exteriorStart(), this.wall.elevation);
+        let b = this.toVec3(edge.exteriorEnd(), this.wall.elevation);
+        let c = this.toVec3(edge.interiorEnd(), this.wall.elevation);
+        let d = this.toVec3(edge.interiorStart(), this.wall.elevation);
 
 
         let fillerMaterial = new MeshBasicMaterial({ color: color, side: side });

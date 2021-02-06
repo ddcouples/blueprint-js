@@ -648,7 +648,6 @@ export class Floorplan extends EventDispatcher {
             }
 
         }
-
         for (let id in floorplan.corners) {
             let corner = floorplan.corners[id];
             corners[id] = this.newCorner(Dimensioning.cmFromMeasureRaw(corner.x), Dimensioning.cmFromMeasureRaw(corner.y), id);
@@ -658,8 +657,9 @@ export class Floorplan extends EventDispatcher {
         }
         let scope = this;
         floorplan.walls.forEach((wall) => {
-            let newWall = scope.newWall(corners[wall.corner1], corners[wall.corner2]);
-
+            let newWall = scope.newWall(corners[wall.corner1], corners[wall.corner2], wall.a, wall.a);
+            
+            newWall.elevation = Dimensioning.cmFromMeasureRaw(wall.elevation);
             if (wall.frontTexture) {
                 if (wall.frontTexture.colormap) {
                     newWall.frontTexture = wall.frontTexture;
@@ -681,14 +681,22 @@ export class Floorplan extends EventDispatcher {
             }
             // Adding of a, b, wallType (straight, curved) for walls happened
             // with introduction of 0.0.2a
-            if (Version.isVersionHigherThan(floorplan.version, '0.0.2a')) {
-                newWall.a = wall.a;
-                newWall.b = wall.b;
-                if (wall.wallType === 'CURVED') {
-                    newWall.wallType = WallTypes.CURVED;
-                } else {
-                    newWall.wallType = WallTypes.STRAIGHT;
-                }
+            // if (Version.isVersionHigherThan(floorplan.version, '0.0.2a')) {
+            //     newWall.a = wall.a;
+            //     newWall.b = wall.b;
+            //     console.log(newWall, 1212)
+            //     if (wall.wallType === 'CURVED') {
+            //         newWall.wallType = WallTypes.CURVED;
+            //     } else {
+            //         newWall.wallType = WallTypes.STRAIGHT;
+            //     }
+            // }
+            newWall.a = wall.a;
+            newWall.b = wall.b;
+            if (wall.wallType === 'CURVED') {
+                newWall.wallType = WallTypes.CURVED;
+            } else {
+                newWall.wallType = WallTypes.STRAIGHT;
             }
         });
 
@@ -768,6 +776,9 @@ export class Floorplan extends EventDispatcher {
         floorplan.walls.forEach((wall) => {
             let corner1 = externalNewCorners[wall.corner1];
             let corner2 = externalNewCorners[wall.corner2];
+            corner1.elevation = wall.elevation;
+            corner2.elevation = wall.elevation;
+            // console.log(' loadLockedFloorplan >>>>>>>>>>>> floorplan.walls', wall);
             let newWall = new Wall(corner1, corner2);
             newWall.isLocked = true;
             if (wall.frontTexture) {
