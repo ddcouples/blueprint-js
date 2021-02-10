@@ -406,10 +406,12 @@ export class WallView2D extends BaseFloorplanViewElement2D {
         // if (this.__backEdge) {
         //     this.__backEdge.debugMode = true;
         // }
-        this.__drawPolygon(0x049995, 1.0);
+        const color  = new Color(this.__options.selectedWallColor).getHex();
+        this.__drawPolygon(color, 1.0);
     }
     __drawHoveredOnState() {
-        this.__drawPolygon(0x04A9F5, 1.0);
+        const color  = new Color(this.__options.hoveredWallColor).getHex();
+        this.__drawPolygon(color, 1.0);
     }
     __drawHoveredOffState() {
         // if (this.__frontEdge) {
