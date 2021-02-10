@@ -473,7 +473,6 @@ if (!opts.widget) {
     settingsViewer2d.bindRange('gridSpacing', 10, 200, configurationHelper.gridSpacing, 1, configurationHelper);
     settingsViewer2d.bindNumber('boundsX', 1, 200, configurationHelper.boundsX, 1, configurationHelper);
     settingsViewer2d.bindNumber('boundsY', 1, 200, configurationHelper.boundsY, 1, configurationHelper);
-    console.log(floorplanningHelper, '-----------');
     settingsSelectedCorner.bindRange('cornerElevation', 1, 10, floorplanningHelper.cornerElevation, 1, floorplanningHelper);
     settingsSelectedWall.bindRange('wallThickness', 0.01, 1, floorplanningHelper.wallThickness, 0.01, floorplanningHelper);
     settingsSelectedWall.bindRange('wallElevation', 0.5, 10, floorplanningHelper.wallElevation, 0.1, floorplanningHelper);

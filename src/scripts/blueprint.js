@@ -68,6 +68,7 @@ class BlueprintJS {
 
         this.view_now = 3;
         this.switchView();
+        window.__blueprint = this;
     }
 
     switchView() {

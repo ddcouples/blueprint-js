@@ -348,6 +348,7 @@ export class Floorplan extends EventDispatcher {
             var existingCorner = this.corners[i];
             if (existingCorner.distanceFromCorner(corner) < cornerTolerance) {
                 this.dispatchEvent({ type: EVENT_NEW, item: this, newItem: existingCorner });
+                console.log('existingCorner >>>>>>>>> ', existingCorner);
                 return existingCorner;
             }
         }
@@ -364,6 +365,17 @@ export class Floorplan extends EventDispatcher {
         this.update();
 
         return corner;
+    }
+
+    // 清理单独的孤立corner
+    clearSignalCorner() {
+        console.log(this.walls, this.corners, '<<<<<<<<<<<< clearSignalCorner');
+        this.corners.forEach(corner => {
+            let isHasWall = this.walls.find(wall => wall.start === corner || wall.end === corner);
+            if (!isHasWall) {
+                corner.remove();
+            }
+        });
     }
 
     /**

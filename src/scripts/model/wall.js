@@ -8,7 +8,6 @@ import { InWallItem } from '../items/in_wall_item.js';
 import { InWallFloorItem } from '../items/in_wall_floor_item.js';
 import { WallItem } from '../items/wall_item.js';
 import { WallFloorItem } from '../items/wall_floor_item.js';
-import { Matrix4 } from 'three/build/three.module';
 
 
 /** The default wall texture. */
@@ -31,7 +30,6 @@ export class Wall extends EventDispatcher {
         this.start = start;
         this.end = end;
         this.name = 'wall';
-        console.log(aa, bb, !aa && !bb, '<<<<<<<<<<<<<<<<')
         if (!aa && !bb) {
             this._walltype = WallTypes.STRAIGHT;
         } else {

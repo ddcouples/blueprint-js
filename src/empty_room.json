@@ -44,7 +44,7 @@
                     "ambientmap": "textures/Wall/Concrete-Wall-002/Concrete_Wall_002_ambientocclusion.jpg",
                     "color": "#FFFFFF"
                 },
-                "wallType": "STRAIGHT",
+                "wallType": "CURVED",
                 "a": {
                     "x": -176.77669529663686,
                     "y": 176.7766952966369
@@ -53,7 +53,8 @@
                     "x": -176.7766952966369,
                     "y": 323.22330470336317
                 },
-                "thickness": 0.2
+                "thickness": 0.2,
+                "elevation": 3
             },
             {
                 "corner1": "f90da5e3-9e0e-eba7-173d-eb0b071e838e",
@@ -76,7 +77,7 @@
                     "ambientmap": "textures/Wall/Concrete-Wall-002/Concrete_Wall_002_ambientocclusion.jpg",
                     "color": "#FFFFFF"
                 },
-                "wallType": "STRAIGHT",
+                "wallType": "CURVED",
                 "a": {
                     "x": 176.7766952966369,
                     "y": 676.7766952966368
@@ -85,7 +86,8 @@
                     "x": 323.22330470336317,
                     "y": 676.776695296637
                 },
-                "thickness": 0.2
+                "thickness": 0.2,
+                "elevation": 3
             },
             {
                 "corner1": "da026c08-d76a-a944-8e7b-096b752da9ed",
@@ -108,7 +110,7 @@
                     "ambientmap": "textures/Wall/Concrete-Wall-002/Concrete_Wall_002_ambientocclusion.jpg",
                     "color": "#FFFFFF"
                 },
-                "wallType": "STRAIGHT",
+                "wallType": "CURVED",
                 "a": {
                     "x": 676.7766952966368,
                     "y": 323.2233047033631
@@ -117,7 +119,8 @@
                     "x": 676.776695296637,
                     "y": 176.77669529663686
                 },
-                "thickness": 0.2
+                "thickness": 0.2,
+                "elevation": 3
             },
             {
                 "corner1": "4e3d65cb-54c0-0681-28bf-bddcc7bdb571",
@@ -140,7 +143,7 @@
                     "ambientmap": "textures/Wall/Concrete-Wall-002/Concrete_Wall_002_ambientocclusion.jpg",
                     "color": "#FFFFFF"
                 },
-                "wallType": "STRAIGHT",
+                "wallType": "CURVED",
                 "a": {
                     "x": 323.2233047033631,
                     "y": -176.77669529663686
@@ -149,12 +152,13 @@
                     "x": 176.77669529663686,
                     "y": -176.7766952966369
                 },
-                "thickness": 0.2
+                "thickness": 0.2,
+                "elevation": 3
             }
         ],
         "rooms": {
             "71d4f128-ae80-3d58-9bd2-711c6ce6cdf2,4e3d65cb-54c0-0681-28bf-bddcc7bdb571,da026c08-d76a-a944-8e7b-096b752da9ed,f90da5e3-9e0e-eba7-173d-eb0b071e838e": {
-                "name": "New Room"
+                "name": "New Room111"
             }
         },
         "wallTextures": [],

@@ -13,6 +13,8 @@ import { IS_TOUCH_DEVICE } from '../../DeviceInfo';
 import { CornerGroupTransform2D } from './CornerGroupTransform2D';
 import Room from '../model/room';
 import { BoundaryView2D } from './BoundaryView2D';
+import defaultConfig from '../config';
+const { view2DCfg } = defaultConfig;
 
 export const floorplannerModes = { MOVE: 0, DRAW: 1, EDIT_ISLANDS: 2 };
 
@@ -39,11 +41,11 @@ class TemporaryWall extends Graphics {
             let vect = endPoint.clone().sub(corner.location);
             let midPoint = (pxEndPoint.clone().sub(pxCornerCo).multiplyScalar(0.5)).add(pxCornerCo);;
 
-            this.lineStyle(10, 0x008CBA);
+            this.lineStyle(10, view2DCfg.tempWallColor);
             this.moveTo(pxCornerCo.x, pxCornerCo.y);
             this.lineTo(pxEndPoint.x, pxEndPoint.y);
 
-            this.beginFill(0x008CBA, 0.5);
+            this.beginFill(view2DCfg.tempWallColor, 0.5);
             this.drawCircle(pxEndPoint.x, pxEndPoint.y, 10);
 
             this.__textfield.position.x = midPoint.x;
@@ -53,7 +55,7 @@ class TemporaryWall extends Graphics {
         }
         if (startPoint !== undefined) {
             let pxStartCo = this.__toPixels(startPoint);
-            this.beginFill(0x008cba, 0.5);
+            this.beginFill(view2DCfg.tempWallColor, 0.5);
             this.drawCircle(pxStartCo.x, pxStartCo.y, 10);
         }
     }
@@ -129,6 +131,7 @@ export class Viewer2D extends Application {
         this.__drawModeMouseDownEvent = this.__drawModeMouseDown.bind(this);
         this.__drawModeMouseUpEvent = this.__drawModeMouseUp.bind(this);
         this.__drawModeMouseMoveEvent = this.__drawModeMouseMove.bind(this);
+        this.__contextmenuEvent = this.__contextmenu.bind(this);
 
         this.__redrawFloorplanEvent = this.__redrawFloorplan.bind(this);
         this.__drawExternalFloorplanEvent = this.__drawExternalFloorplan.bind(this);
@@ -232,6 +235,7 @@ export class Viewer2D extends Application {
 
         window.addEventListener('resize', this.__windowResizeEvent);
         window.addEventListener('orientationchange', this.__windowResizeEvent);
+        document.oncontextmenu = this.__contextmenuEvent;
 
         this._handleWindowResize();
 
@@ -252,8 +256,12 @@ export class Viewer2D extends Application {
         }
     }
 
-    __keyListener(evt) {
+    __contextmenu() {
+        this.switchMode(floorplannerModes.MOVE);
+        return false;
+    }
 
+    __keyListener(evt) {
         if (evt.type === EVENT_KEY_PRESSED && evt.key === 'Shift') {
             this.__snapToGrid = true;
         }
@@ -312,10 +320,12 @@ export class Viewer2D extends Application {
                 this.__lastNode = null;
                 this.__floorplanContainer.plugins.resume('drag');
                 this.__changeCursorMode();
+                this.__floorplan.clearSignalCorner();
                 break;
             default:
                 throw new Error('Unknown Viewer2D mode');
         }
+
     }
 
     __changeCursorMode() {
@@ -332,6 +342,7 @@ export class Viewer2D extends Application {
     }
 
     __drawModeMouseUp(evt) {
+        console.log(this.__mode, '>>>>>>>>> __drawModeMouseUp');
         if (this.__mode === floorplannerModes.DRAW) {
             let co = evt.data.getLocalPosition(this.__floorplanContainer);
             let cmCo = new Vector2(co.x, co.y);
@@ -341,7 +352,7 @@ export class Viewer2D extends Application {
                 cmCo.x = Math.floor(cmCo.x / Configuration.getNumericValue(snapTolerance)) * Configuration.getNumericValue(snapTolerance);
                 cmCo.y = Math.floor(cmCo.y / Configuration.getNumericValue(snapTolerance)) * Configuration.getNumericValue(snapTolerance);
             }
-
+            
             if(this.__floorplan.boundary){
                 if(!this.__floorplan.boundary.containsPoint(cmCo.x, cmCo.y)){
                     return;
@@ -407,7 +418,8 @@ export class Viewer2D extends Application {
         this.__groupTransformer.visible = false;
         this.__groupTransformer.selected = null;
     }
-
+   
+    // 检测点击事件
     __selectionMonitor(evt) {
         this.__currentSelection = null;
         this.__groupTransformer.visible = false;
@@ -638,5 +650,6 @@ export class Viewer2D extends Application {
         this.__floorplan.removeEventListener(EVENT_LOADED, this.__redrawFloorplanEvent);
         window.removeEventListener('resize', this.__windowResizeEvent);
         window.removeEventListener('orientationchange', this.__windowResizeEvent);
+        document.oncontextmenu = null;
     }
 }

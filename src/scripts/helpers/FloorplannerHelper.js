@@ -91,7 +91,6 @@ export class FloorPlannerHelper {
         }
     }
     get wallThickness() {
-        console.log('this.__wallThickness', this.__wallThickness);
         return Dimensioning.cmToMeasureRaw(this.__wallThickness);
     }
 
@@ -104,7 +103,6 @@ export class FloorPlannerHelper {
     }
 
     get wallElevation() {
-        console.log('this.__wallElevation', this.__wallElevation);
         return Dimensioning.cmToMeasureRaw(this.__wallElevation);
     }
 
