@@ -18,6 +18,7 @@ const { view2DCfg } = defaultConfig;
 
 export const floorplannerModes = { MOVE: 0, DRAW: 1, EDIT_ISLANDS: 2 };
 
+// 绘制时的零时墙
 class TemporaryWall extends Graphics {
     constructor() {
         super();
@@ -39,7 +40,7 @@ class TemporaryWall extends Graphics {
             let pxCornerCo = this.__toPixels(corner.location.clone());
             let pxEndPoint = this.__toPixels(endPoint.clone());
             let vect = endPoint.clone().sub(corner.location);
-            let midPoint = (pxEndPoint.clone().sub(pxCornerCo).multiplyScalar(0.5)).add(pxCornerCo);;
+            let midPoint = (pxEndPoint.clone().sub(pxCornerCo).multiplyScalar(0.5)).add(pxCornerCo);
 
             this.lineStyle(10, view2DCfg.tempWallColor);
             this.moveTo(pxCornerCo.x, pxCornerCo.y);
@@ -86,6 +87,8 @@ export class Viewer2D extends Application {
             dimlinecolor: '#3EDEDE', 
             dimarrowcolor: '#000000', 
             dimtextcolor: '#000000', 
+            selectedWallColor: '#049995',
+            hoveredWallColor: '#04A9F5',
             scale: true, 
             rotate: true, 
             translate: true,
@@ -157,6 +160,7 @@ export class Viewer2D extends Application {
         this.__keyListenerEvent = this.__keyListener.bind(this);        
 
         let origin = new Graphics();
+        // / 存放PIXI 2d图形实例
         this.__floorplanElementsHolder = new Graphics();
         this.__boundaryHolder = new Graphics();
         this.__grid2d = new Grid2D(this.view, options);
@@ -340,9 +344,8 @@ export class Viewer2D extends Application {
             this.__drawModeMouseUp(evt);
         }
     }
-
+    // Viewer2D 绘制墙体
     __drawModeMouseUp(evt) {
-        console.log(this.__mode, '>>>>>>>>> __drawModeMouseUp');
         if (this.__mode === floorplannerModes.DRAW) {
             let co = evt.data.getLocalPosition(this.__floorplanContainer);
             let cmCo = new Vector2(co.x, co.y);
@@ -517,6 +520,7 @@ export class Viewer2D extends Application {
     }
 
     __redrawFloorplan() {
+        console.log(this.__mode, '__redrawFloorplan');
         let scope = this;
         let i = 0;
 
@@ -547,6 +551,7 @@ export class Viewer2D extends Application {
         for (i = 0; i < this.__floorplan.walls.length; i++) {
             let modelWall = this.__floorplan.walls[i];
             let wallView = new WallView2D(this.__floorplan, this.__options, modelWall);
+            // console.log('Viewer2D __redrawFloorplan >>>>>> ', wallView, this.__options, modelWall);
             this.__floorplanElementsHolder.addChild(wallView);
             this.__walls2d.push(wallView);
             this.__entities2D.push(wallView);

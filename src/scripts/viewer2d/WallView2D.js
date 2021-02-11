@@ -245,7 +245,6 @@ export class Edge2D extends BaseFloorplanViewElement2D {
         // if(!this.__edge.room){
         //     return;
         // }
-
         let alpha_new = (this.__debugMode) ? 0.1 : alpha;
         this.__drawEdgePolygon(this.__edge, color, alpha_new);//0.1);//
 
@@ -259,13 +258,13 @@ export class Edge2D extends BaseFloorplanViewElement2D {
             }
         }
 
-        if(!this.__debugMode){
-            let cornerLine = this.__getCornerCoordinates();
-            let lineThickness = 1.5; //Math.min(Dimensioning.cmToPixel(this.__wall.thickness * 0.25), 1.0);
-            this.lineStyle(lineThickness, 0xF0F0F0);
-            this.moveTo(cornerLine[1].x, cornerLine[1].y);
-            this.lineTo(cornerLine[0].x, cornerLine[0].y);
-        }        
+        // if(!this.__debugMode){
+        //     let cornerLine = this.__getCornerCoordinates();
+        //     let lineThickness = 1.5; //Math.min(Dimensioning.cmToPixel(this.__wall.thickness * 0.25), 1.0);
+        //     this.lineStyle(lineThickness, 0xF0F0F0);
+        //     this.moveTo(cornerLine[1].x, cornerLine[1].y);
+        //     this.lineTo(cornerLine[0].x, cornerLine[0].y);
+        // }        
     }
 
     get edge() {
@@ -420,7 +419,8 @@ export class WallView2D extends BaseFloorplanViewElement2D {
         // if (this.__backEdge) {
         //     this.__backEdge.debugMode = false;
         // }
-        this.__drawPolygon(0x000000, 1.0);
+        console.log(this.__wall, '<<<<<<<<<<<<< WallView2D, __drawHoveredOffState');
+        this.__drawPolygon(0xA5A7A9, 1.0);
     }
 
     __getCornerLocation(vec2){

@@ -790,7 +790,6 @@ export class Floorplan extends EventDispatcher {
             let corner2 = externalNewCorners[wall.corner2];
             corner1.elevation = wall.elevation;
             corner2.elevation = wall.elevation;
-            // console.log(' loadLockedFloorplan >>>>>>>>>>>> floorplan.walls', wall);
             let newWall = new Wall(corner1, corner2);
             newWall.isLocked = true;
             if (wall.frontTexture) {
