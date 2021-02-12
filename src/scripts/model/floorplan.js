@@ -369,13 +369,15 @@ export class Floorplan extends EventDispatcher {
 
     // 清理单独的孤立corner
     clearSignalCorner() {
-        console.log(this.walls, this.corners, '<<<<<<<<<<<< clearSignalCorner');
+        console.log(this.walls, this.corners, '<<<<<<<<<<<< floorplan clearSignalCorner ');
+        const clearCorners = []
         this.corners.forEach(corner => {
             let isHasWall = this.walls.find(wall => wall.start === corner || wall.end === corner);
             if (!isHasWall) {
-                corner.remove();
+                clearCorners.push(corner)
             }
         });
+        clearCorners.forEach(corner => corner.remove());
     }
 
     /**

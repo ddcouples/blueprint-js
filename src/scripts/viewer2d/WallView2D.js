@@ -22,9 +22,10 @@ export class WallDimensions2D extends Graphics {
         this.__floorplan = floorplan;
         this.__options = opts;
         this.__wall = wall;
-        this.__textfield = new Text('Length: ', { fontFamily: 'Arial', fontSize: 14, fill: this.__options.dimtextcolor, align: 'center' });
+        this.__textfield = new Text('Length: ', { fontFamily: 'Arial', fontSize: 12, fontWeight: 600 , fill: this.__options.dimtextcolor, align: 'center' });
         this.__textfield.anchor.set(0.5, 0.5);
         this.interactive = this.__textfield.interactive = false;
+        this.timer = null
         this.addChild(this.__textfield);
         this.update();
     }
@@ -73,7 +74,7 @@ export class WallDimensions2D extends Graphics {
     }
 
     __drawDimensionLine() {
-        // console.trace('DRAW DIMENSION LINE ::: ', this.__wall.id);
+        // console.trace('DRAW DIMENSION LINE ::: ', this.__wall);
         let wallDirectionNormalized = this.__wall.wallDirectionNormalized();
         let wallAngle = this.__wall.wallDirectionNormalized().angle();
         let p1Start = this.__toPixels(this.__wall.start.location.clone());
@@ -86,7 +87,7 @@ export class WallDimensions2D extends Graphics {
         let p2Center = this.__wallOffsetLocation(this.__wall.end.location.clone(), 50);
         //Draw the line at wall start
         this.clear();
-        this.lineStyle(2, this.__options.dimlinecolor);
+        this.lineStyle(1*window.devicePixelRatio, this.__options.dimlinecolor);
 
         this.moveTo(p1Start.x, p1Start.y);
         this.lineTo(p1End.x, p1End.y);
@@ -118,19 +119,33 @@ export class WallDimensions2D extends Graphics {
         }
         this.lineTo(arrow2[0].x, arrow2[0].y);
         this.endFill();
-
-        // this.__textfield.rotation = -wallAngle;
+        const textPosition = p1Center.add(p2Center);
+        this.__textfield.position.x = textPosition.x / 2
+        this.__textfield.position.y =  textPosition.y / 2
+        if (wallAngle > Math.PI / 2 && wallAngle < Math.PI) {
+            this.__textfield.rotation = Math.PI + wallAngle;
+        } else if (wallAngle >= Math.PI && wallAngle < Math.PI * 3 / 2) {
+            this.__textfield.rotation =  wallAngle - Math.PI;
+        } else {
+            this.__textfield.rotation = wallAngle;
+        }
+        
     }
 
     __updateDimensionText() {
-        let location = this.__wallOffsetLocationFromCenter(100);
+        let location = this.__wallOffsetLocationFromCenter(2);
         this.__textfield.text = Dimensioning.cmToMeasure(this.__wall.wallSize);
-        this.__textfield.position.x = location.x;
-        this.__textfield.position.y = location.y;
+        // this.__textfield.position.x = location.x;
+        // this.__textfield.position.y = location.y;
     }
 
     update() {
         this.__drawDimensionLine();
+        clearTimeout(this.timer)
+        this.timer = setTimeout(() => {
+            this.__drawDimensionLine();
+        }, 300)
+        
         this.__updateDimensionText();
     }
 
@@ -211,7 +226,7 @@ export class Edge2D extends BaseFloorplanViewElement2D {
         this.endFill();
     }
 
-    __drawEdgePolygon(forEdge, color = 0xDDDDDD, alpha = 1.0) {
+    __drawEdgePolygon(forEdge, color = 0xDDDDDD, alpha = 1.0, borderColor=0x000000) {
         let points = this.__getPolygonCoordinates(forEdge);
         
         this.clear();
@@ -223,7 +238,7 @@ export class Edge2D extends BaseFloorplanViewElement2D {
         // let pStart = points[0].clone().add(points[0].clone().sub(points[3]).multiplyScalar(0.5)); 
         // let pEnd = points[1].clone().add(points[2].clone().sub(points[3]).multiplyScalar(0.5)); 
 
-        this.lineStyle(lineThickness, color, 1.0);
+        this.lineStyle(lineThickness, color, 2.0);
         this.moveTo(pStart.x, pStart.y);
         this.lineTo(pEnd.x, pEnd.y);
 
@@ -246,7 +261,8 @@ export class Edge2D extends BaseFloorplanViewElement2D {
         //     return;
         // }
         let alpha_new = (this.__debugMode) ? 0.1 : alpha;
-        this.__drawEdgePolygon(this.__edge, color, alpha_new);//0.1);//
+        const borderColor = 0x000000;
+        this.__drawEdgePolygon(this.__edge, color, alpha_new, borderColor);//0.1);//
 
         if (this.__debugMode) {
             this.__drawEdgeArrow(this.__edge, 0x000000, alpha);
@@ -419,7 +435,6 @@ export class WallView2D extends BaseFloorplanViewElement2D {
         // if (this.__backEdge) {
         //     this.__backEdge.debugMode = false;
         // }
-        console.log(this.__wall, '<<<<<<<<<<<<< WallView2D, __drawHoveredOffState');
         this.__drawPolygon(0xA5A7A9, 1.0);
     }
 
@@ -508,9 +523,9 @@ export class WallView2D extends BaseFloorplanViewElement2D {
     }
 
     remove() {
-        this.__wall.removeEventListener(EVENT_MOVED, this.__wallUpdatedEvent);
-        this.__wall.removeEventListener(EVENT_UPDATED, this.__wallUpdatedEvent);
-        this.__wall.removeEventListener(EVENT_DELETED, this.__wallDeletedEvent);
+        this.__wall && this.__wall.removeEventListener(EVENT_MOVED, this.__wallUpdatedEvent);
+        this.__wall && this.__wall.removeEventListener(EVENT_UPDATED, this.__wallUpdatedEvent);
+        this.__wall && this.__wall.removeEventListener(EVENT_DELETED, this.__wallDeletedEvent);
         this.removeChild(this.__info);
         super.remove();
     }

@@ -81,9 +81,9 @@ let opts = {
             dimlinecolor: '#3E0000',
             dimarrowcolor: '#FF0000',
             dimtextcolor: '#000000',
-            pixiAppOptions: {
-                resolution: 4,
-            },
+            // pixiAppOptions: {
+            //     resolution: 4,
+            // },
             pixiViewportOptions: {
                 passiveWheel: false,
             }

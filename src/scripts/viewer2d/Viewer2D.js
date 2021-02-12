@@ -1,6 +1,7 @@
 import { Application, Graphics, Text } from 'pixi.js';
 import { Viewport } from 'pixi-viewport';
 import { Vector2, EventDispatcher, CompressedPixelFormat } from 'three';
+import  debounce from 'lodash.debounce'
 import { EVENT_NEW, EVENT_DELETED, EVENT_LOADED, EVENT_2D_SELECTED, EVENT_NEW_ROOMS_ADDED, EVENT_KEY_RELEASED, EVENT_KEY_PRESSED, EVENT_WALL_2D_CLICKED, EVENT_CORNER_2D_CLICKED, EVENT_ROOM_2D_CLICKED, EVENT_NOTHING_2D_SELECTED, EVENT_MOVED, EVENT_MODE_RESET, EVENT_EXTERNAL_FLOORPLAN_LOADED } from '../core/events';
 import { Grid2D } from './Grid2d';
 import { CornerView2D } from './CornerView2D';
@@ -14,6 +15,7 @@ import { CornerGroupTransform2D } from './CornerGroupTransform2D';
 import Room from '../model/room';
 import { BoundaryView2D } from './BoundaryView2D';
 import defaultConfig from '../config';
+import { fromSVG } from 'bezier-js';
 const { view2DCfg } = defaultConfig;
 
 export const floorplannerModes = { MOVE: 0, DRAW: 1, EDIT_ISLANDS: 2 };
@@ -68,7 +70,7 @@ export class Viewer2D extends Application {
         const pixiDefalultAppOpts = {
             width: 512, 
             height: 512,
-            resolution: window.devicePixelRatio || 2,
+            resolution: window.devicePixelRatio > 2 ? window.devicePixelRatio : 2,
             antialias: true,
             transparent: true,
         };
@@ -136,7 +138,8 @@ export class Viewer2D extends Application {
         this.__drawModeMouseMoveEvent = this.__drawModeMouseMove.bind(this);
         this.__contextmenuEvent = this.__contextmenu.bind(this);
 
-        this.__redrawFloorplanEvent = this.__redrawFloorplan.bind(this);
+        this.__redrawFloorplanEvent = debounce(this.__redrawFloorplan.bind(this), 300);
+        // this.__redrawFloorplanEvent = this.__redrawFloorplan.bind(this);
         this.__drawExternalFloorplanEvent = this.__drawExternalFloorplan.bind(this);
         this.__windowResizeEvent = this._handleWindowResize.bind(this);
         this.__resetFloorplanEvent = this.__resetFloorplan.bind(this);
@@ -370,7 +373,8 @@ export class Viewer2D extends Application {
             // of start drawing a new wall)
             if (this.__lastNode != null) {
                 this.__floorplan.newWall(this.__lastNode, corner);
-                this.__floorplan.newWallsForIntersections(this.__lastNode, corner);
+                // 处理交叉的点，todo，有问题
+                // this.__floorplan.newWallsForIntersections(this.__lastNode, corner);
                 // this.__tempWall.visible = false;
                 // this.switchMode(floorplannerModes.MOVE);
             }
@@ -523,12 +527,12 @@ export class Viewer2D extends Application {
         console.log(this.__mode, '__redrawFloorplan');
         let scope = this;
         let i = 0;
-
         // clear scene
-        scope.__entities2D.forEach((entity) => {
+        for(i = 0; i < scope.__entities2D.length; i++) {
+            const entity = scope.__entities2D[i]
             entity.removeFloorplanListener(EVENT_2D_SELECTED, this.__selectionMonitorEvent);
             entity.remove();
-        });
+        }
 
         this.__drawBoundary();
 

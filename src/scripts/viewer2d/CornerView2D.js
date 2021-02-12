@@ -134,8 +134,8 @@ export class CornerView2D extends BaseFloorplanViewElement2D {
     }
 
     remove() {
-        this.__corner.removeEventListener(EVENT_DELETED, this.__cornerDeletedEvent);
-        this.__corner.removeEventListener(EVENT_MOVED, this.__cornerUpdateEvent);
+        this.__corner && this.__corner.removeEventListener(EVENT_DELETED, this.__cornerDeletedEvent);
+        this.__corner && this.__corner.removeEventListener(EVENT_MOVED, this.__cornerUpdateEvent);
         super.remove();
     }
 
