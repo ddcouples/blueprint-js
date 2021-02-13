@@ -1,7 +1,8 @@
 import { Application, Graphics, Text } from 'pixi.js';
 import { Viewport } from 'pixi-viewport';
 import { Vector2, EventDispatcher, CompressedPixelFormat } from 'three';
-import  debounce from 'lodash.debounce'
+import debounce from 'lodash.debounce'
+import throttle from 'lodash.throttle'
 import { EVENT_NEW, EVENT_DELETED, EVENT_LOADED, EVENT_2D_SELECTED, EVENT_NEW_ROOMS_ADDED, EVENT_KEY_RELEASED, EVENT_KEY_PRESSED, EVENT_WALL_2D_CLICKED, EVENT_CORNER_2D_CLICKED, EVENT_ROOM_2D_CLICKED, EVENT_NOTHING_2D_SELECTED, EVENT_MOVED, EVENT_MODE_RESET, EVENT_EXTERNAL_FLOORPLAN_LOADED } from '../core/events';
 import { Grid2D } from './Grid2d';
 import { CornerView2D } from './CornerView2D';
@@ -15,7 +16,6 @@ import { CornerGroupTransform2D } from './CornerGroupTransform2D';
 import Room from '../model/room';
 import { BoundaryView2D } from './BoundaryView2D';
 import defaultConfig from '../config';
-import { fromSVG } from 'bezier-js';
 const { view2DCfg } = defaultConfig;
 
 export const floorplannerModes = { MOVE: 0, DRAW: 1, EDIT_ISLANDS: 2 };
@@ -130,7 +130,7 @@ export class Viewer2D extends Application {
 
         this.__zoomedEvent = this.__zoomed.bind(this);
         this.__pannedEvent = this.__panned.bind(this);
-        this.__selectionMonitorEvent = this.__selectionMonitor.bind(this);
+        this.__selectionMonitorEvent = throttle(this.__selectionMonitor.bind(this), 300);
         this.__cornerMovedEvent = this.__cornerMoved.bind(this);
 
         this.__drawModeMouseDownEvent = this.__drawModeMouseDown.bind(this);

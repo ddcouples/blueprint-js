@@ -5,6 +5,8 @@ import { Graphics, Text, Point } from 'pixi.js';
 import { Vector3, Vector2, Color } from 'three';
 import { Configuration, snapToGrid, snapTolerance, dragOnlyX, dragOnlyY, directionalDrag } from '../core/configuration.js';
 import { isMobile } from 'detect-touch-device';
+// import  debounce from 'lodash.debounce'
+import throttle from 'lodash.throttle'
 
 export class WallDimensions2D extends Graphics {
     constructor(floorplan, options, wall) {
@@ -180,6 +182,7 @@ export class Edge2D extends BaseFloorplanViewElement2D {
     }
 
     __getPolygonCoordinates(forEdge) {
+        console.trace('WallView2D >>>>>>>> __getPolygonCoordinates', forEdge)
         let points = [
             forEdge.exteriorStart(this.__debugMode), 
             forEdge.exteriorEnd(this.__debugMode), 
@@ -230,7 +233,7 @@ export class Edge2D extends BaseFloorplanViewElement2D {
         let points = this.__getPolygonCoordinates(forEdge);
         
         this.clear();
-        let lineThickness = 2.5;
+        let lineThickness = 1;
         
         let pStart = points[2];
         let pEnd = points[3];
@@ -238,11 +241,11 @@ export class Edge2D extends BaseFloorplanViewElement2D {
         // let pStart = points[0].clone().add(points[0].clone().sub(points[3]).multiplyScalar(0.5)); 
         // let pEnd = points[1].clone().add(points[2].clone().sub(points[3]).multiplyScalar(0.5)); 
 
-        this.lineStyle(lineThickness, color, 2.0);
+        this.lineStyle(lineThickness, color);
         this.moveTo(pStart.x, pStart.y);
         this.lineTo(pEnd.x, pEnd.y);
 
-        this.lineStyle(lineThickness, color, 0.0);
+        this.lineStyle(lineThickness, color);
         this.beginFill(color, alpha);
         for (let i = 0; i < points.length; i++) {
             let pt = points[i];
@@ -314,7 +317,7 @@ export class WallView2D extends BaseFloorplanViewElement2D {
             this.__deactivate();
         }
 
-        this.__wallUpdatedEvent = this.__drawUpdatedWall.bind(this);
+        this.__wallUpdatedEvent = throttle(this.__drawUpdatedWall.bind(this), 50);
         this.__wallDeletedEvent = this.__wallDeleted.bind(this); //this.remove.bind(this);
 
         this.__wall.addEventListener(EVENT_MOVED, this.__wallUpdatedEvent);
@@ -504,6 +507,7 @@ export class WallView2D extends BaseFloorplanViewElement2D {
     }
 
     __drawUpdatedWall(evt) {
+        console.log('WallView2D >>>>>>> __drawUpdatedWall', 1212)
         this.__info.update();
         this.viewDimensions = true;
         if (this.selected) {
