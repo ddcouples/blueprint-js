@@ -1,5 +1,6 @@
 import { BaseFloorplanViewElement2D } from './BaseFloorplanViewElement2D.js';
 import { EVENT_MOVED, EVENT_UPDATED, EVENT_DELETED } from '../core/events.js';
+import { WallTypes } from '../core/constants.js';
 import { Dimensioning } from '../core/dimensioning.js';
 import { Graphics, Text, Point } from 'pixi.js';
 import { Vector3, Vector2, Color } from 'three';
@@ -182,7 +183,6 @@ export class Edge2D extends BaseFloorplanViewElement2D {
     }
 
     __getPolygonCoordinates(forEdge) {
-        console.trace('WallView2D >>>>>>>> __getPolygonCoordinates', forEdge)
         let points = [
             forEdge.exteriorStart(this.__debugMode), 
             forEdge.exteriorEnd(this.__debugMode), 
@@ -205,7 +205,9 @@ export class Edge2D extends BaseFloorplanViewElement2D {
             return pixelPoints;
         }
         for (let i = 0; i < points.length; i++) {
+            console.log('>>>> before cm', points[i])
             points[i] = Dimensioning.cmToPixelVector2D(points[i]);
+            console.log('>>>> after pixel', points[i])
         }
         return points;
     }
@@ -237,15 +239,31 @@ export class Edge2D extends BaseFloorplanViewElement2D {
         
         let pStart = points[2];
         let pEnd = points[3];
+        console.log('Edge2D >>>>>>>>>>>>> __drawEdgePolygon', points)
 
         // let pStart = points[0].clone().add(points[0].clone().sub(points[3]).multiplyScalar(0.5)); 
         // let pEnd = points[1].clone().add(points[2].clone().sub(points[3]).multiplyScalar(0.5)); 
 
-        this.lineStyle(lineThickness, color);
-        this.moveTo(pStart.x, pStart.y);
-        this.lineTo(pEnd.x, pEnd.y);
+        // this.lineStyle(lineThickness, borderColor);
+        // // this.moveTo(pStart.x, pStart.y);
+        // // this.lineTo(pEnd.x, pEnd.y);
+        if (this.__wall._walltype === WallTypes.CURVED) {
+            const startBesizVector = Dimensioning.cmToPixelVector2D(this.__wall.start)
+            const endBesizVector = Dimensioning.cmToPixelVector2D(this.__wall.end)
+            const thickness = Dimensioning.cmToPixel(this.__wall.thickness)
+            const besizVector = Dimensioning.cmToPixelVector2D(this.__wall._a)
+            this.lineStyle(1, 0x00ff00)
+            // this.beginFill(color, alpha);
+            this.moveTo(endBesizVector.x, endBesizVector.y);
+            // this.bezierCurveTo(besizVector.x, besizVector.y, besizVector.x, besizVector.y, endBesizVector.x, endBesizVector.y)
+            // this.lineStyle(1, color)
+            this.bezierCurveTo(besizVector.x, besizVector.y, besizVector.x, besizVector.y, startBesizVector.x + 1, startBesizVector.y +1)
+            // this.endFill();
+            console.log(this.__wall.thickness, thickness, besizVector, 'Edge2D >>>>>>>>>>>>> __drawEdgePolygon')
+            // return
+        }
 
-        this.lineStyle(lineThickness, color);
+        this.lineStyle(lineThickness, borderColor);
         this.beginFill(color, alpha);
         for (let i = 0; i < points.length; i++) {
             let pt = points[i];
@@ -317,7 +335,7 @@ export class WallView2D extends BaseFloorplanViewElement2D {
             this.__deactivate();
         }
 
-        this.__wallUpdatedEvent = throttle(this.__drawUpdatedWall.bind(this), 50);
+        this.__wallUpdatedEvent = throttle(this.__drawUpdatedWall.bind(this), 100);
         this.__wallDeletedEvent = this.__wallDeleted.bind(this); //this.remove.bind(this);
 
         this.__wall.addEventListener(EVENT_MOVED, this.__wallUpdatedEvent);
@@ -345,7 +363,7 @@ export class WallView2D extends BaseFloorplanViewElement2D {
             this.__info.alpha = 1.0;
             return;
         }
-        this.__info.alpha = 0.15;
+        this.__info.alpha = 0.0;
     }
 
     __getCornerCoordinates() {
@@ -360,6 +378,7 @@ export class WallView2D extends BaseFloorplanViewElement2D {
     }
 
     __drawInWallItems() {
+        if (!this.__wall) return
         this.lineStyle(0, 0xF0F0F0);
         let inWallItems = this.__wall.inWallItems;
         // let depth = this.__wall.thickness * 0.5;
@@ -387,23 +406,24 @@ export class WallView2D extends BaseFloorplanViewElement2D {
                 new Point(Dimensioning.cmToPixel(d.x), Dimensioning.cmToPixel(d.y)),
             ];
 
-            this.beginFill(0x0000F0, 0.85);
+            this.beginFill(0x0000F0, 1);
             this.drawPolygon(points);
             this.endFill();
         }
     }
-
+    // 绘制入口
     __drawPolygon(color = 0xDDDDDD, alpha = 1.0) {
         this.clear();
         /**
          * Front edge color is blue
          */
-        let frontColor = color; //0x0000FF; //
+        let frontColor = 0x0000FF || color; //0x0000FF; //
 
         /**
          * Back Edge color is red
          */
         let backColor = color; //0xFF0000; //
+        // console.log(this.wall._walltype, '<<<<<< WallView2D __drawPolygon')
 
         if (this.__frontEdge) {
             this.__frontEdge.drawEdge(frontColor, alpha);
@@ -415,6 +435,10 @@ export class WallView2D extends BaseFloorplanViewElement2D {
         //     console.log('NO FRONT OR BACK EDGE TO DRAW ', this.__wall.wallSize);
         // }
         this.__drawInWallItems();
+    }
+
+    __drawBezierWall(color = 0xDDDDDD, alpha = 1.0) {
+
     }
 
     __drawSelectedState() {
@@ -507,7 +531,6 @@ export class WallView2D extends BaseFloorplanViewElement2D {
     }
 
     __drawUpdatedWall(evt) {
-        console.log('WallView2D >>>>>>> __drawUpdatedWall', 1212)
         this.__info.update();
         this.viewDimensions = true;
         if (this.selected) {

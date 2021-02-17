@@ -1,6 +1,7 @@
 import { BaseFloorplanViewElement2D } from './BaseFloorplanViewElement2D.js';
 import { EVENT_ROOM_ATTRIBUTES_CHANGED, EVENT_CHANGED } from '../core/events.js';
 import { Dimensioning } from '../core/dimensioning.js';
+import { WallTypes } from '../core/constants.js';
 import { Configuration } from '../core/configuration.js';
 import { Vector2 } from 'three';
 import { Text } from 'pixi.js';
@@ -58,26 +59,58 @@ export class RoomView2D extends BaseFloorplanViewElement2D {
     __drawPolygon(color, alpha = 1.0) {
         let points = [];
         this.clear();
+        this.lineStyle(2, 0xff0000)
         this.beginFill(color, alpha);
-
-        // this.__room.interiorCorners.forEach((corner) => {
-        //     points.push(new Vector2(corner.x, corner.y));
-        // });
-        this.__room.corners.forEach((corner) => {
-            points.push(new Vector2(corner.x, corner.y));
-        });
-
-        for (let i = 0; i < points.length; i++) {
-            let x = Dimensioning.cmToPixel(points[i].x);
-            let y = Dimensioning.cmToPixel(points[i].y);
+        const cornerLen = this.__room.corners.length
+        for (let i = 0; i < cornerLen; i++) {
+            const start = this.__room.corners[i]
+            const nextIndex = i === cornerLen - 1 ? 0 : i+1;
+            const end = this.__room.corners[nextIndex]
+            let sx = Dimensioning.cmToPixel(start.x);
+            let sy = Dimensioning.cmToPixel(start.y);
+            let ex = Dimensioning.cmToPixel(end.x);
+            let ey = Dimensioning.cmToPixel(end.y);
+            const wall = this.__room.__walls.find(wall => {
+                return (wall.start.id === start.id && wall.end.id === end.id) || (wall.start.id === end.id && wall.end.id === start.id)
+            })
+            console.log('>>>>> ', wall, wall._walltype === WallTypes.STRAIGHT)
             if (i === 0) {
-                this.moveTo(x, y);
+                this.moveTo(sx, sy);
+            }
+            if (wall._walltype === WallTypes.STRAIGHT) {
+                this.lineTo(ex, ey);
             } else {
-                this.lineTo(x, y);
+                const cpx = Dimensioning.cmToPixel(wall._a.x);
+                const cpy = Dimensioning.cmToPixel(wall._a.y);
+                this.bezierCurveTo(cpx, cpy, cpx, cpy, ex, ey)
             }
         }
         this.endFill();
     }
+    // 旧
+    // __drawPolygon(color, alpha = 1.0) {
+    //     let points = [];
+    //     this.clear();
+    //     this.beginFill(color, alpha);
+
+    //     // this.__room.interiorCorners.forEach((corner) => {
+    //     //     points.push(new Vector2(corner.x, corner.y));
+    //     // });
+    //     this.__room.corners.forEach((corner) => {
+    //         points.push(new Vector2(corner.x, corner.y));
+    //     });
+
+    //     for (let i = 0; i < points.length; i++) {
+    //         let x = Dimensioning.cmToPixel(points[i].x);
+    //         let y = Dimensioning.cmToPixel(points[i].y);
+    //         if (i === 0) {
+    //             this.moveTo(x, y);
+    //         } else {
+    //             this.lineTo(x, y);
+    //         }
+    //     }
+    //     this.endFill();
+    // }
 
     __drawSelectedState() {
         this.__drawPolygon(0x00BA8C, 1.0);

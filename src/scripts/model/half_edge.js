@@ -575,7 +575,6 @@ export class HalfEdge extends EventDispatcher {
 
         let v2Thickness = (v2.wall.frontEdge && v2.wall.backEdge) ? v2.wall.thickness * 0.5 : v2.wall.thickness;
         let v1Thickness = (v1.wall.frontEdge && v1.wall.backEdge) ? v1.wall.thickness * 0.5 : v1.wall.thickness;
-
         u = v1.getEnd().location.clone().sub(v1.getStart().location).normalize();
         v = v2.getEnd().location.clone().sub(v2.getStart().location).normalize();
 
