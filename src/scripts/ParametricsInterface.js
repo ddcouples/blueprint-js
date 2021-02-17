@@ -5,6 +5,7 @@ export class ParametricsInterface {
         this.__parametricDataClass = parametricDataClass;
         this.__viewer3D = viewer3D;
         this.__settings = QuickSettings.create(x, y, `Parametric Item: ${parametricDataClass.name}`, appParent);
+        this.__settings.setHeight(300)
         this.__constructUI();
     }
 

@@ -26,8 +26,8 @@ fps.start();
 let default_room = JSON.stringify(default_room_json);
 let startY = 0;
 let panelWidths = 200;
-let uxInterfaceHeight = 450;
-let subPanelsHeight = 460;
+let uxInterfaceHeight = 350;
+let subPanelsHeight = 300;
 let floor_textures = floor_textures_json['default'];
 let floor_texture_keys = Object.keys(floor_textures);
 
@@ -445,7 +445,7 @@ if (!opts.widget) {
     settingsSelectedRoom = QuickSettings.create(0, 0, 'Room', app_parent);
 
     settingsViewer3d = QuickSettings.create(0, 0, 'Viewer 3D', app_parent);
-    settingsSelectedWall3D = QuickSettings.create(0, 0, 'Wall', app_parent);
+    settingsSelectedWall3D = QuickSettings.create(0, 0, 'Wall 3D', app_parent);
     settingsSelectedRoom3D = QuickSettings.create(0, 0, 'Room', app_parent);
 
 
@@ -521,7 +521,7 @@ if (!opts.widget) {
     settingsViewer2d.setHeight(subPanelsHeight);
     settingsViewer3d.setHeight(subPanelsHeight);
 
-
+    settingsSelectedWall3D.setHeight(subPanelsHeight)
 
     uxInterface.setPosition(app_parent.clientWidth - panelWidths, startY);
     settingsViewer2d.setPosition(app_parent.clientWidth - panelWidths, startY + uxInterfaceHeight);
