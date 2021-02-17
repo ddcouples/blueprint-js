@@ -433,7 +433,7 @@ blueprint3d.roomplanner.addRoomplanListener(EVENT_GLTF_READY, function(evt) {
 });
 
 // console.log(default_room);
-// blueprint3d.model.loadSerialized(default_room);
+blueprint3d.model.loadSerialized(default_room);
 
 
 if (!opts.widget) {

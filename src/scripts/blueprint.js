@@ -78,13 +78,17 @@ class BlueprintJS {
         this.floorplanner.switchMode(floorplannerModes.MOVE);
         if (this.view_now === 3 && !this.options.widget) {
             this.view_now = 2;
-            document.getElementById(this.options.viewer2d.id).style.visibility = "visible";
-            document.getElementById(this.options.viewer3d.id).style.visibility = "hidden";
+            // document.getElementById(this.options.viewer2d.id).style.visibility = "visible";
+            // document.getElementById(this.options.viewer3d.id).style.visibility = "hidden";
+            document.getElementById(this.options.viewer2d.id).style.display = "block";
+            document.getElementById(this.options.viewer3d.id).style.display = "none";
             this.roomplanner.enabled = false;
         } else if (this.view_now === 2 && !this.options.widget) {
             this.view_now = 3;
-            document.getElementById(this.options.viewer2d.id).style.visibility = "hidden";
-            document.getElementById(this.options.viewer3d.id).style.visibility = "visible";
+            // document.getElementById(this.options.viewer2d.id).style.visibility = "hidden";
+            // document.getElementById(this.options.viewer3d.id).style.visibility = "visible";
+            document.getElementById(this.options.viewer2d.id).style.display = "none";
+            document.getElementById(this.options.viewer3d.id).style.display = "block";
             this.roomplanner.enabled = true;
         }
     }

@@ -417,7 +417,7 @@ export class WallView2D extends BaseFloorplanViewElement2D {
         /**
          * Front edge color is blue
          */
-        let frontColor = 0x0000FF || color; //0x0000FF; //
+        let frontColor = color; //0x0000FF; //
 
         /**
          * Back Edge color is red
